@@ -1,7 +1,9 @@
 #version 120
 
+varying vec2 texcoord;
+
 void main() {
-    // 使用固定功能管线的纹理坐标通道，确保与 Iris/OptiFine 的全屏四边形一致
+    // 全屏四边形的标准传参：位置与纹理坐标
     gl_Position = ftransform();
-    gl_TexCoord[0] = gl_MultiTexCoord0;
+    texcoord = gl_MultiTexCoord0.st; // 直接使用通道0的ST坐标
 }
