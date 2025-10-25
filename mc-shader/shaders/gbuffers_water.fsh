@@ -1,32 +1,21 @@
 #version 120
 
-uniform sampler2D texture;
-uniform float frameTimeCounter;
-
-varying vec2 texcoord;
-
-// Gentle surface waves affect shading slightly
-float waves(vec2 uv) {
-    vec2 w1 = uv * 8.0 + vec2(frameTimeCounter * 0.10, frameTimeCounter * 0.05);
-    vec2 w2 = uv * 12.0 + vec2(-frameTimeCounter * 0.08, frameTimeCounter * 0.12);
-    return 0.5 + 0.5 * (sin(w1.x) * 0.5 + cos(w1.y) * 0.5 + sin(w2.x * 0.7) * 0.3);
-}
+// OptiFine/Iris 在 gbuffers 阶段提供的材质与光照贴图
+uniform sampler2D texture;   // 方块/流体的主纹理
+uniform sampler2D lightmap;  // 光照贴图（环境与直射光）
 
 void main() {
-    // Base water sample (vanilla water texture)
-    vec4 base = texture2D(texture, texcoord);
+    // 采样基础颜色（含顶点色调制），并应用光照贴图
+    vec4 base = texture2D(texture,  gl_TexCoord[0].st) * gl_Color;
+    vec3 lm   = texture2D(lightmap, gl_TexCoord[1].st).rgb;
+    vec3 color = base.rgb * lm; // 简单光照影响
 
-    // Vivid emerald tone so the change is obvious in-game
-    vec3 vividGreen = vec3(0.0, 0.8, 0.35);
-    float w = waves(texcoord);
-    vec3 color = mix(vividGreen * 0.85, vividGreen * 1.2, w);
+    // 马尔代夫海水的青绿色调（轻柔偏绿蓝），强度可按需调整
+    const vec3 maldives = vec3(0.26, 0.88, 0.72);
+    const float strength = 0.65; // 0.0=不变, 1.0=完全替换
+    color = mix(color, maldives, strength);
 
-    // Keep only a hint of vanilla detail so the tint dominates
-    color = mix(color, base.rgb, 0.05);
-
-    // Semi-transparency. Many pipelines ignore alpha here, but when respected,
-    // this gives a softer look.
-    float alpha = 0.75;
-
-    gl_FragData[0] = vec4(color, alpha);
+    // 保留透明度以维持水的半透明效果
+    gl_FragColor = vec4(color, base.a);
 }
+
