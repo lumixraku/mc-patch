@@ -1,0 +1,25 @@
+# General macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon files on macOS server shares
+Icon
+
+# Thumbnail cache files
+._*
+
+# Files associated with macOS folder attributes
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# System metadata files on network shares
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

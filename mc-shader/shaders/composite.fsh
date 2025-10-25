@@ -126,16 +126,16 @@ void main() {
         vec2 distort = n.xz * 0.02;
         vec3 refl = sampleReflection(worldPos, n, viewDir, 8.0, distort);
 
-        // Base greenish water color and subtle depth tint
-        vec3 waterColor = vec3(0.2, 0.45, 0.35);
-        vec3 mixed = mix(waterColor, refl, f * 0.85);
+        // Emerald tint to stay consistent with gbuffers_water
+        vec3 waterColor = vec3(0.0, 0.8, 0.35);
+        vec3 mixed = mix(waterColor, refl, f * 0.8);
         color = mixed;
     }
 
     // Rain puddles: glossy boost and faint reflection on flat ground
     if (rainStrength > 0.01) {
-        float flat = flatMask(texcoord);
-        float wet = rainStrength * flat;
+        float flatness = flatMask(texcoord);
+        float wet = rainStrength * flatness;
 
         vec3 worldPos = reconstructWorldPosition(texcoord, depth);
         vec3 viewDir = normalize(worldPos - cameraPosition);
@@ -149,6 +149,5 @@ void main() {
         color *= 1.0 - wet * 0.08;
     }
 
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
-

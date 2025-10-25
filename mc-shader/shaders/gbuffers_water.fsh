@@ -16,13 +16,13 @@ void main() {
     // Base water sample (vanilla water texture)
     vec4 base = texture2D(texture, texcoord);
 
-    // Target: soft translucent green with gentle wave modulation
-    vec3 greenWater = vec3(0.2, 0.45, 0.35);
+    // Vivid emerald tone so the change is obvious in-game
+    vec3 vividGreen = vec3(0.0, 0.8, 0.35);
     float w = waves(texcoord);
-    vec3 color = mix(greenWater * 0.9, greenWater * 1.1, w);
+    vec3 color = mix(vividGreen * 0.85, vividGreen * 1.2, w);
 
-    // Keep some of vanilla texture detail
-    color = mix(color, base.rgb, 0.15);
+    // Keep only a hint of vanilla detail so the tint dominates
+    color = mix(color, base.rgb, 0.05);
 
     // Semi-transparency. Many pipelines ignore alpha here, but when respected,
     // this gives a softer look.
@@ -30,4 +30,3 @@ void main() {
 
     gl_FragData[0] = vec4(color, alpha);
 }
-
