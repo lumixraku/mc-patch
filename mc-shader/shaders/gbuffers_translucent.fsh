@@ -3,15 +3,11 @@
 varying vec2 texcoord;
 varying vec4 color;
 
-// Base terrain albedo
 uniform sampler2D texture;
 
 void main() {
     vec4 albedo = texture2D(texture, texcoord) * color;
-
-    // Alpha test for cutout blocks (leaves, plants, etc.)
-    if (albedo.a < 0.1) discard;
-    albedo.a = 1.0; // surviving fragments should be opaque in terrain pass
+    // No discard: keep alpha for glass/water-like materials
     gl_FragData[0] = albedo;
 }
 

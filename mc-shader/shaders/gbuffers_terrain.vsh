@@ -1,18 +1,10 @@
-#version 150
+#version 120
 
-in vec3 vaPosition;
-in vec2 vaUV0;
-in vec4 vaColor;
-
-out vec2 texcoord;
-out vec4 color;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
+varying vec2 texcoord;
+varying vec4 color;
 
 void main() {
-    texcoord = vaUV0;
-    color = vaColor;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(vaPosition, 1.0);
+    texcoord = (gl_MultiTexCoord0).xy;
+    color = gl_Color;
+    gl_Position = ftransform();
 }
-

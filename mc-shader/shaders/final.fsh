@@ -1,29 +1,23 @@
-#version 150
+#version 120
 
-/*
- Final pass: keep default block colors.
- For forced test, uncomment the yellow override below.
-*/
+/* Final pass: keep default block colors (Chocapic-style). */
 
-// Inputs provided by the pipeline (Iris/OptiFine):
-uniform sampler2D colortex0; // main color buffer (many versions)
-uniform sampler2D gcolor;    // alternative name in some versions
-in vec2 texcoord;            // full-screen UV from vsh
+uniform sampler2D colortex0; // some versions
+uniform sampler2D gcolor;    // common in others (default)
+varying vec2 texcoord;       // from vsh
 
 // Toggle: 0=use colortex0, 1=use gcolor
 #ifndef USE_GCOLOR
-#define USE_GCOLOR 0
+#define USE_GCOLOR 1
 #endif
 
-out vec4 fragColor;
-
 void main() {
-    // Forced test color (yellow):
-    // fragColor = vec4(1.0, 1.0, 0.0, 1.0);
+    // Forced test (yellow)
+    // gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
 
 #if USE_GCOLOR
-    fragColor = texture(gcolor, texcoord);
+    gl_FragColor = texture2D(gcolor, texcoord);
 #else
-    fragColor = texture(colortex0, texcoord);
+    gl_FragColor = texture2D(colortex0, texcoord);
 #endif
 }
