@@ -15,3 +15,4 @@ void main() {
     color = vaColor;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(vaPosition, 1.0);
 }
+
