@@ -24,3 +24,9 @@ composite.fsh 和 composite.vsh（而不是 final.fsh/vsh）中。
 
 final.fsh 是最终决定效果  
 fragColor = vec4(1.0, 1.0, 0.0, 1.0); 设置为 yellow 界面就是 yellow  composite.fsh 不是最后一步
+
+
+## Why does a white-stained glass pane look the same color as the water surface?
+
+
+Short answer: because our earlier water‑tint lived in the translucent pass, and glass renders in that same pass. So the shader was tinting any translucent surface (glass, ice, etc.) to the same turquoise as water.

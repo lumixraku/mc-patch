@@ -51,3 +51,8 @@ option.BLOOM=false
 ### final.fsh（最终阶段）
 作用：对 composite 的结果做最后的全屏处理（色彩校正、UI 混合、FXAA 等）。
 影响范围：最高优先级。这里若输出常量色，会覆盖世界与大多数 UI（你看到“UI 也变色”的典型表现）。
+
+
+### block.properties
+vBlockId = mc_Entity.x; 把编号放进去，片元阶段可读
+通过映射让 mc_Entity.x 变为稳定值，比如 1000=water，1001=glass，避免不同版本原生ID不一致

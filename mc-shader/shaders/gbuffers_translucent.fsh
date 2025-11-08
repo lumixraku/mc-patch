@@ -1,34 +1,49 @@
 #version 120
 
+// Debug: color all non-water translucent (e.g., glass) magenta to verify
+// separation from water. Set to 1 to enable temporarily.
+#ifndef DEBUG_TRANS_MAGENTA
+#define DEBUG_TRANS_MAGENTA 0
+#endif
+
 varying vec2 texcoord;
 varying vec4 color;
+varying float vBlockId; // from vsh
 
 uniform sampler2D texture;
 
 void main() {
+    // Translucent materials (glass, ice, etc.)
+    // Water is handled explicitly in gbuffers_water.fsh.
     vec4 albedo = texture2D(texture, texcoord) * color;
+    vec4 texOnly = texture2D(texture, texcoord);
 
-    // Heuristic: water in vanilla is translucent and strongly blue/cyan-tinted.
-    // We detect likely-water by blue dominance and sufficient alpha, then tint toward
-    // a Maldives-like lime-green turquoise.
-    float maxRG = max(albedo.r, albedo.g);
-    bool blueDominant = (albedo.b > maxRG + 0.05);
-    bool isTranslucent = (albedo.a > 0.15);
+    // Stable block IDs via shaders/block.properties
+    const int BLOCK_WATER = 1000; // minecraft:water
+    const int BLOCK_GLASS = 1001; // minecraft:glass, glass_pane, white_* variants
 
-    if (blueDominant && isTranslucent) {
-        // Target lime-turquoise color (Maldives vibe)
-        const vec3 limeTurquoise = vec3(0.38, 0.95, 0.62);
-        // Preserve perceived brightness while shifting hue
-        float luma = dot(albedo.rgb, vec3(0.2126, 0.7152, 0.0722));
-        vec3 target = normalize(limeTurquoise) * max(luma, 0.15);
-        // Blend strength: 0.0=no change, 1.0=full lime
-        const float STRENGTH = 0.75;
-        albedo.rgb = mix(albedo.rgb, target, STRENGTH);
-        // Slight boost to vibrance
-        albedo.rgb = clamp(albedo.rgb * 1.05, 0.0, 1.0);
+    int blockId = int(vBlockId + 0.5);
+    // Fallback for environments where block.properties isn't picked up:
+    // 8/9 are classic water IDs in old versions.
+    bool isClassicWater = (blockId == 8 || blockId == 9);
+
+    // Never treat water as glass in this pass (some versions may route water
+    // through translucent). Leave it unchanged here; water coloring lives in
+    // gbuffers_water.fsh so glass never inherits water color.
+    if (blockId == BLOCK_WATER || isClassicWater) {
+        gl_FragData[0] = albedo;
+        return;
     }
 
-    // No discard: keep alpha for glass/water-like materials
+    // For all other translucent blocks (glass, panes, ice, slime, etc.)
+    // use the original texture color and ignore vertex tint.
+    // This avoids unintended scene/biome tints (e.g., green) on clear glass.
+    albedo = texOnly;
+
+#if DEBUG_TRANS_MAGENTA
+    albedo.rgb = vec3(1.0, 0.0, 1.0);
+#endif
+
     gl_FragData[0] = albedo;
 }
 

@@ -1,17 +1,34 @@
 #version 120
 
+// Debug: force water to pure red to verify separation from glass.
+// Set to 0 to disable after testing.
+#ifndef DEBUG_WATER_RED
+#define DEBUG_WATER_RED 1
+#endif
+
 // Water pass — force a Maldives-like lime/turquoise tint
 
 varying vec2 texcoord;
 varying vec4 color;
 varying vec3 vNormal; // from vsh (eye-space)
 varying vec3 vEyePos; // from vsh (eye-space)
+varying float vBlockId; // from vsh
 
 uniform sampler2D texture;
 uniform int isEyeInWater; // 0 = air, 1 = water
 
 void main() {
     vec4 albedo = texture2D(texture, texcoord) * color;
+
+    // Only apply water shading to actual water blocks. If for any reason
+    // non-water translucent geometry is routed through this program, bypass.
+    const int BLOCK_WATER = 1000;
+    int blockId = int(vBlockId + 0.5);
+    bool isClassicWater = (blockId == 8 || blockId == 9);
+    if (!(blockId == BLOCK_WATER || isClassicWater)) {
+        gl_FragData[0] = albedo; // not water; output original
+        return;
+    }
 
     // Softer, less-saturated Maldives turquoise (stable color)
     const vec3 limeTurquoise = vec3(0.28, 0.67, 0.52);
