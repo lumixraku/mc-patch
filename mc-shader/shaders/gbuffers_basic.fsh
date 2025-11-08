@@ -12,7 +12,9 @@ void main() {
 
     // Use the original material color (albedo), with vertex tint
     vec4 albedo = texture2D(texture, texcoord) * color;
-    albedo.a = 1.0; // opaque in basic
+    // IMPORTANT: keep original alpha. Entity shadows and many effects in the
+    // basic pass rely on translucency. Forcing alpha=1 makes black quads.
+    if (albedo.a < 0.01) discard; // skip near-zero alpha texels
     gl_FragData[0] = albedo;
 }
 
