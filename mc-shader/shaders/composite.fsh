@@ -22,14 +22,12 @@ void main() {
     vec4 c = texture2D(colortex0, texcoord);
 #endif
 
-    // Underwater tint: light lime-green to match surface water
+    // Underwater tint: match surface tone but keep it subtle
     if (isEyeInWater == 1) {
-        const vec3 limeTurquoise = vec3(0.38, 0.95, 0.62);
-        // Gentle blend so world remains readable
-        const float STRENGTH = 0.20; // increase for a greener underwater
-        float luma = dot(c.rgb, vec3(0.2126, 0.7152, 0.0722));
-        vec3 target = normalize(limeTurquoise) * max(luma, 0.18);
-        c.rgb = mix(c.rgb, target, STRENGTH);
+        const vec3 limeTurquoise = vec3(0.30, 0.78, 0.55);
+        // Very gentle blend; also slightly dim to avoid neon look
+        const float STRENGTH = 0.12; // tweak 0.08..0.20 to taste
+        c.rgb = mix(c.rgb, limeTurquoise, STRENGTH) * 0.96;
     }
 
     gl_FragColor = c;
