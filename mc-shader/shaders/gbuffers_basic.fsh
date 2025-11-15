@@ -2,19 +2,38 @@
 
 varying vec2 texcoord;
 varying vec4 color;
+varying vec3 vNormal;
+varying vec2 lmcoord;
 
 // Base albedo/texture from the game
 uniform sampler2D texture;
+uniform vec3 sunPosition;
+uniform vec3 upPosition;
+
+float envLightFactor(vec2 lm) {
+    float sky = clamp(lm.t, 0.0, 1.0);
+    float torch = clamp(lm.s, 0.0, 1.0);
+    return clamp(max(sky, torch*torch), 0.0, 1.0);
+}
+
+vec3 shade(vec3 c, vec3 n, float envL){
+    vec3 N = normalize(n);
+    vec3 sunDir = normalize(sunPosition);
+    vec3 upDir  = normalize(upPosition);
+    float sunUp = dot(sunDir, upDir);
+    float day  = clamp(sunUp, 0.0, 1.0);
+    float moon = clamp(-sunUp, 0.0, 1.0);
+    vec3 L = (sunUp >= 0.0) ? sunDir : -sunDir;
+    float ndl = max(dot(N, L), 0.0);
+    float ambient = mix(0.04, 0.35, envL);
+    float lit = ambient + ndl * 0.7 * (day*1.0 + moon*0.06);
+    return clamp(c * lit, 0.0, 1.0);
+}
 
 void main() {
-    // Toggle test color (commented by default)
-    // gl_FragData[0] = vec4(1.0, 0.0, 0.0, 1.0);
-
-    // Use the original material color (albedo), with vertex tint
     vec4 albedo = texture2D(texture, texcoord) * color;
-    // IMPORTANT: keep original alpha. Entity shadows and many effects in the
-    // basic pass rely on translucency. Forcing alpha=1 makes black quads.
     if (albedo.a < 0.01) discard; // skip near-zero alpha texels
+    albedo.rgb = shade(albedo.rgb, vNormal, envLightFactor(lmcoord));
     gl_FragData[0] = albedo;
 }
 
