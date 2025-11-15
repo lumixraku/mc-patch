@@ -38,6 +38,13 @@ void main() {
     vec3 baseColor = albedo.rgb;
     albedo.rgb = shade(albedo.rgb, vNormal, envLightFactor(lmcoord));
 
+    float torch = clamp(lmcoord.s, 0.0, 1.0);
+    float torchBoost = pow(torch, 0.35);
+    const float TORCH_STRENGTH = 1.10;
+    vec3 warmTint = vec3(1.00, 0.90, 0.75);
+    vec3 warmBase = clamp(baseColor * warmTint, 0.0, 1.0);
+    albedo.rgb = mix(albedo.rgb, warmBase, clamp(torchBoost * TORCH_STRENGTH, 0.0, 1.0));
+
     int blockId = int(vBlockId + 0.5);
     if (blockId == BLOCK_EMISSIVE_SOLID) {
         const float EMISSIVE_STRENGTH = 0.8;

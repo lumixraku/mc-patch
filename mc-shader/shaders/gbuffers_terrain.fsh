@@ -53,6 +53,17 @@ void main() {
     float envL = envLightFactor(lmcoord);
     albedo.rgb = applyLighting(albedo.rgb, vNormal, envL);
 
+    // Extra boost from block light (torches, glowstone, etc.) so nearby
+    // blocks are noticeably lit even when the sun/moon is weak.
+    float torch = clamp(lmcoord.s, 0.0, 1.0);
+    // Make falloff very slow: mid/low block light stays bright.
+    float torchBoost = pow(torch, 0.35); // exponent <1 flattens decay
+    const float TORCH_STRENGTH = 1.10;
+    // Warm daylight color for block light (avoid cold/blue tint)
+    vec3 warmTint = vec3(1.00, 0.90, 0.75);
+    vec3 warmBase = clamp(baseColor * warmTint, 0.0, 1.0);
+    albedo.rgb = mix(albedo.rgb, warmBase, clamp(torchBoost * TORCH_STRENGTH, 0.0, 1.0));
+
     // Make specific solid blocks self-lit (glowstone, sea lantern, etc.).
     int blockId = int(vBlockId + 0.5);
     if (blockId == BLOCK_EMISSIVE_SOLID) {

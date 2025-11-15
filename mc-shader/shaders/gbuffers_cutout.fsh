@@ -38,6 +38,13 @@ void main() {
     if (albedo.a < 0.1) discard;
     albedo.rgb = shade(albedo.rgb, vNormal, envLightFactor(lmcoord));
     albedo.a = 1.0; // make surviving fragments fully opaque
+    
+    float torch = clamp(lmcoord.s, 0.0, 1.0);
+    float torchBoost = pow(torch, 0.35);
+    const float TORCH_STRENGTH = 1.10;
+    vec3 warmTint = vec3(1.00, 0.90, 0.75);
+    vec3 warmBase = clamp(baseColor * warmTint, 0.0, 1.0);
+    albedo.rgb = mix(albedo.rgb, warmBase, clamp(torchBoost * TORCH_STRENGTH, 0.0, 1.0));
 
     int blockId = int(vBlockId + 0.5);
     if (blockId == BLOCK_EMISSIVE_SOLID) {
