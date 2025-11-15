@@ -4,11 +4,15 @@ varying vec2 texcoord;
 varying vec4 color;
 varying vec3 vNormal;
 varying vec2 lmcoord; // sky/torch lightmap UV
+varying float vBlockId;
 
 // Base terrain albedo
 uniform sampler2D texture;
 uniform vec3 sunPosition; // sun/moon direction (view space)
 uniform vec3 upPosition;  // world up (view space)
+
+// Custom block IDs from block.properties
+const int BLOCK_EMISSIVE_SOLID = 1200; // glowstone, sea lantern, etc.
 
 // Map vanilla lightmap UVs to a simple scalar [0..1]
 float envLightFactor(vec2 lm) {
@@ -40,6 +44,7 @@ vec3 applyLighting(vec3 base, vec3 normal, float envL) {
 
 void main() {
     vec4 albedo = texture2D(texture, texcoord) * color;
+    vec3 baseColor = albedo.rgb; // unlit texture color
 
     // Alpha test for cutout blocks (leaves, plants, etc.)
     if (albedo.a < 0.1) discard;
@@ -47,6 +52,15 @@ void main() {
 
     float envL = envLightFactor(lmcoord);
     albedo.rgb = applyLighting(albedo.rgb, vNormal, envL);
+
+    // Make specific solid blocks self-lit (glowstone, sea lantern, etc.).
+    int blockId = int(vBlockId + 0.5);
+    if (blockId == BLOCK_EMISSIVE_SOLID) {
+        // Blend back toward the unlit texture to keep it bright and readable.
+        const float EMISSIVE_STRENGTH = 0.8; // 0=no emissive, 1=fully unshaded
+        albedo.rgb = mix(albedo.rgb, baseColor, EMISSIVE_STRENGTH);
+    }
+
     gl_FragData[0] = albedo;
 }
 

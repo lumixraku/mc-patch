@@ -4,11 +4,14 @@ varying vec2 texcoord;
 varying vec4 color;
 varying vec3 vNormal;
 varying vec2 lmcoord;
+varying float vBlockId;
 
 // Base albedo/texture from the game
 uniform sampler2D texture;
 uniform vec3 sunPosition;
 uniform vec3 upPosition;
+
+const int BLOCK_EMISSIVE_SOLID = 1200;
 
 float envLightFactor(vec2 lm) {
     float sky = clamp(lm.t, 0.0, 1.0);
@@ -32,8 +35,16 @@ vec3 shade(vec3 c, vec3 n, float envL){
 
 void main() {
     vec4 albedo = texture2D(texture, texcoord) * color;
+    vec3 baseColor = albedo.rgb;
     if (albedo.a < 0.01) discard; // skip near-zero alpha texels
     albedo.rgb = shade(albedo.rgb, vNormal, envLightFactor(lmcoord));
+
+    int blockId = int(vBlockId + 0.5);
+    if (blockId == BLOCK_EMISSIVE_SOLID) {
+        const float EMISSIVE_STRENGTH = 0.8;
+        albedo.rgb = mix(albedo.rgb, baseColor, EMISSIVE_STRENGTH);
+    }
+
     gl_FragData[0] = albedo;
 }
 

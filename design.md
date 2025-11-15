@@ -1,6 +1,7 @@
 # 实现一个简单的 Minecraft Shader
 我正在做 Minecraft shader 
 mc-shader 就是我的 shader
+Chocapic13 V6 Lite 是参考的目标
 ## 效果要求
 
 - 对于 water block，水要做成淡淡的半透明绿色，另外水面有浅浅的波浪。水面也需要有fresnel 产生的倒影。
