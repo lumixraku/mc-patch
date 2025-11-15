@@ -3,7 +3,7 @@
 # 源目录
 SOURCE_DIR="/Users/raku/repos/mc-patch/mc-shader"
 # 目标目录
-TARGET_DIR="/Users/raku/Games/ModrinthApp/profiles/1201/shaderpacks"
+TARGET_DIR="/Users/raku/Games/ModrinthApp/profiles/121/shaderpacks"
 
 # 检查源目录是否存在
 if [ ! -d "$SOURCE_DIR" ]; then

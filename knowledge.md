@@ -56,3 +56,16 @@ option.BLOOM=false
 ### block.properties
 vBlockId = mc_Entity.x; 把编号放进去，片元阶段可读
 通过映射让 mc_Entity.x 变为稳定值，比如 1000=water，1001=glass，避免不同版本原生ID不一致
+
+### gbuffer_water gbuffer_translucent
+你说得对：在你的运行环境里，gbuffers_water 这个程序确实会处理到“非水”的半透明几何（例如玻璃/玻璃板）。因此，一旦把非水的早退逻辑去掉，水里的上色就会同样作用到玻璃上。这正是我们现在在水的着色器里做 blockId 守卫和 return 的原因。
+
+结论与做法
+
+必须保留 gbuffers_water.fsh 的“非水早退”判断与 return（否则水的着色会影响玻璃）：
+mc-shader/shaders/gbuffers_water.fsh:28
+gbuffers_translucent 仍然有用，因为它负责“非水的所有半透明材质”（玻璃/玻璃板/冰/粘液等），并且我们已在这里统一用“仅纹理颜色”渲染，忽略 gl_Color 的绿色顶点色污染：
+mc-shader/shaders/gbuffers_translucent.fsh:27
+为什么会这样
+
+Pass 名称不代表“只会处理某一类方块”。在某些版本/渲染管线下，部分半透明几何会被送进 gbuffers_water 程序。如果不在程序内部做 blockId 过滤，水的逻辑就会误作用到玻璃。
