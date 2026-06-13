@@ -1,5 +1,7 @@
 Simple Minecraft Shader (OptiFine/Iris)
 
+![Sunset sky](docs/sunset.png)
+
 Features
 - Water: soft translucent green, gentle waves, Fresnel reflections
 - Rain: subtle puddle gloss and screen-space reflections on flat ground
