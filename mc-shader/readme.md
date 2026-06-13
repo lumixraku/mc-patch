@@ -3,7 +3,7 @@ Simple Minecraft Shader (OptiFine/Iris)
 Features
 - Water: soft translucent green, gentle waves, Fresnel reflections
 - Rain: subtle puddle gloss and screen-space reflections on flat ground
-- Sky: warm morning/evening glow near the horizon
+- Sky: fully procedural day/night gradient with a multi-band sunset/dusk wash (seamless horizon, no vanilla seam)
 
 Install
 - Copy the `mc-shader` directory (or zip its contents) into your shaderpacks folder.
