@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 源目录
-SOURCE_DIR="/Users/raku/repos/mc-patch/mc-shader"
+SOURCE_DIR="/Users/raku/repos/mc/mc-patch/mc-shader"
 # 目标目录
 TARGET_DIR="/Users/raku/Games/ModrinthApp/profiles/121/shaderpacks"
 
