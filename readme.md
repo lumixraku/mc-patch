@@ -1,8 +1,8 @@
-Simple Minecraft Shader (OptiFine/Iris)
+raku-shader — Simple Minecraft Shader (OptiFine/Iris)
 
-![Sunset sky](docs/sunset.png)
+![Sunset sky](docs/sunset.jpg)
 
-![Water reflection at sunset](docs/water-reflection.png)
+![Water reflection at sunset](docs/water-reflection.jpg)
 
 Features
 - Water: soft translucent green, gentle waves, Fresnel reflections
@@ -10,7 +10,7 @@ Features
 - Sky: fully procedural day/night gradient with a multi-band sunset/dusk wash (seamless horizon, no vanilla seam)
 
 Install
-- Copy the `mc-shader` directory (or zip its contents) into your shaderpacks folder.
+- Copy the `raku-shader` directory (or zip its contents) into your shaderpacks folder.
 - Select it in OptiFine or Iris.
 
 Notes
